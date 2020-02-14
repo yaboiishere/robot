@@ -23,24 +23,34 @@ void loop() {
     rArm.write(pos); 
     lArm.write(pos); 
     delay(10);       // waits 15ms for the servo to reach the position
-    if(pos%90==0||!pos)mouth();
+    if(pos%90==0||!pos)mouth(20);
   }
-  for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
+  mouth(100);
+  for (pos = 180; pos >= 90; pos -= 1) { // goes from 180 degrees to 0 degrees
     head.write(pos);              // tell servo to go to position in variable 'pos'
     rArm.write(pos); 
     lArm.write(pos);            // tell servo to go to position in variable 'pos'
     delay(10);                       // waits 15ms for the servo to reach the position
-    if(pos%90==0||!pos)mouth();
+    if(pos%90==0||!pos)mouth(20);
   }
-    for (pos = 0; pos <= 90; pos += 1) { // goes from 0 degrees to 180 degrees
+  mouth(100);
+  for (pos = 90; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
+    head.write(pos);              // tell servo to go to position in variable 'pos'
+    rArm.write(pos); 
+    lArm.write(pos);            // tell servo to go to position in variable 'pos'
+    delay(10);                       // waits 15ms for the servo to reach the position
+    if(pos%90==0||!pos)mouth(20);
+  }
+  mouth(100);
+  for (pos = 0; pos <= 90; pos += 1) { // goes from 0 degrees to 180 degrees
     // in steps of 1 degree
     head.write(pos);              // tell servo to go to position in variable 'pos'
     rArm.write(pos); 
     lArm.write(pos); 
     delay(10);       // waits 15ms for the servo to reach the position
-    if(pos%90==0||!pos)mouth();
+    if(pos%90==0||!pos)mouth(20);
   }
-  
+  mouth(100);
 }
 void registerWrite(int whichPin, int whichState) {
 // the bits you want to send
@@ -60,28 +70,28 @@ void registerWrite(int whichPin, int whichState) {
   digitalWrite(latch, HIGH);
 
 }
-void mouth(){
+void mouth(int timeout){
   int br=0;
   while (br<8){
     /* code */
     registerWrite(br, HIGH);
-    delay(20);
+    delay(timeout);
     if (br!=0){
       /* code */
       registerWrite(br-1,LOW);
     }
-    delay(20);
+    delay(timeout);
     br++;    
   }
   while (br>=0){
     /* code */
     registerWrite(br, HIGH);
-    delay(20);
+    delay(timeout);
     if (br!=8){
       /* code */
       registerWrite(br+1,LOW);
     }
-    delay(20);
+    delay(timeout);
     br--;    
   }
 }
