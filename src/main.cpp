@@ -1,56 +1,50 @@
 #include <Arduino.h>
 #include <Servo.h>
-int latch=6, data=7,cl=5;
-Servo head;  // create servo object to control a servo
+int latch=7, data=8,cl=4;
+int pos = 90;
+int step = 1;
+Servo head;
 Servo rArm;
 Servo lArm;
-// twelve servo objects can be created on most boards
-
-int pos = 0;    // variable to store the servo position
+int led = 0, ledStep = 1;
 void setup() {
-  head.attach(9);  // attaches the servo on pin 9 to the servo object
+  head.attach(9);
   rArm.attach(10);
   lArm.attach(11);
   pinMode(latch, OUTPUT);
   pinMode(cl, OUTPUT);
   pinMode(data, OUTPUT);
 }
-
 void loop() {
-  for (pos = 90; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    head.write(pos);              // tell servo to go to position in variable 'pos'
+    head.write(pos);
     rArm.write(pos); 
-    lArm.write(pos); 
-    delay(10);       // waits 15ms for the servo to reach the position
-    if(pos%90==0||!pos)mouth(20);
-  }
-  mouth(100);
-  for (pos = 180; pos >= 90; pos -= 1) { // goes from 180 degrees to 0 degrees
-    head.write(pos);              // tell servo to go to position in variable 'pos'
-    rArm.write(pos); 
-    lArm.write(pos);            // tell servo to go to position in variable 'pos'
-    delay(10);                       // waits 15ms for the servo to reach the position
-    if(pos%90==0||!pos)mouth(20);
-  }
-  mouth(100);
-  for (pos = 90; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
-    head.write(pos);              // tell servo to go to position in variable 'pos'
-    rArm.write(pos); 
-    lArm.write(pos);            // tell servo to go to position in variable 'pos'
-    delay(10);                       // waits 15ms for the servo to reach the position
-    if(pos%90==0||!pos)mouth(20);
-  }
-  mouth(100);
-  for (pos = 0; pos <= 90; pos += 1) { // goes from 0 degrees to 180 degrees
-    // in steps of 1 degree
-    head.write(pos);              // tell servo to go to position in variable 'pos'
-    rArm.write(pos); 
-    lArm.write(pos); 
-    delay(10);       // waits 15ms for the servo to reach the position
-    if(pos%90==0||!pos)mouth(20);
-  }
-  mouth(100);
+    lArm.write(pos);
+    pos+=step;
+    if(pos==180){
+      mouth(100);
+      step*=-1;
+    }
+    if(pos==90){
+      mouth(100);
+    }
+    
+    if(pos==0){
+      mouth(100);
+      step*=-1;
+    }
+    registerWrite(led, HIGH);
+    delay(20);
+    if (led!=0){
+      registerWrite(led-1,LOW);
+    }
+    if (led!=8){
+      registerWrite(led+1,LOW);
+    }
+    delay(20);
+    led+=ledStep;
+    if(led==8)ledStep*=-1;
+    if(led==0)ledStep*=-1;
+    delay(10);
 }
 void registerWrite(int whichPin, int whichState) {
 // the bits you want to send
