@@ -26,7 +26,7 @@ void setup() {
 void registerWrite(int whichPin, int whichState) {
 // the bits you want to send
   byte bitsToSend = 0;
-
+  
   // turn off the output so the pins don't light up
   // while you're shifting bits:
   digitalWrite(latch, LOW);
