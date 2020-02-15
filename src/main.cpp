@@ -1,12 +1,20 @@
 #include <Arduino.h>
 #include <Servo.h>
 int latch=7, data=8,cl=4;
-int pos = 90;
-int step = 1;
+int pos = 90, step = 1;
+int led = 0, ledStep = 1;
+int rLed=3, gLed=5, bLed=6;
+int Colors[6][3] ={
+  {153,0,204},
+  {102,0,102},
+  {255, 255, 0},
+  {51,153,0},
+  {0, 255, 255},
+  {204,102,0}
+};
 Servo head;
 Servo rArm;
 Servo lArm;
-int led = 0, ledStep = 1;
 void setup() {
   head.attach(9);
   rArm.attach(10);
@@ -16,35 +24,43 @@ void setup() {
   pinMode(data, OUTPUT);
 }
 void loop() {
-    head.write(pos);
-    rArm.write(pos); 
-    lArm.write(pos);
-    pos+=step;
-    if(pos==180){
-      mouth(100);
-      step*=-1;
-    }
-    if(pos==90){
-      mouth(100);
-    }
-    
-    if(pos==0){
-      mouth(100);
-      step*=-1;
-    }
-    registerWrite(led, HIGH);
-    delay(20);
-    if (led!=0){
-      registerWrite(led-1,LOW);
-    }
-    if (led!=8){
-      registerWrite(led+1,LOW);
-    }
-    delay(20);
-    led+=ledStep;
-    if(led==8)ledStep*=-1;
-    if(led==0)ledStep*=-1;
-    delay(10);
+  //servo code start
+  head.write(pos);
+  rArm.write(pos); 
+  lArm.write(pos);
+  pos+=step;
+  if(pos==180){
+    mouth(100);
+    step*=-1;
+  }
+  if(pos==90){
+    mouth(100);
+  }
+  
+  if(pos==0){
+    mouth(100);
+    step*=-1;
+  }
+  //servo code end
+  //matrix bitshifter code start
+  registerWrite(led, HIGH);
+  delay(20);
+  if (led!=0){
+    registerWrite(led-1,LOW);
+  }
+  if (led!=8){
+    registerWrite(led+1,LOW);
+  }
+  delay(20);
+  led+=ledStep;
+  if(led==8)ledStep*=-1;
+  if(led==0)ledStep*=-1;
+  //matrix bitshifter code end
+  //rgb eyes code start
+  int ran = rand()%6;
+  _RGB_color(Colors[ran][0],Colors[ran][1],Colors[ran][2]);
+  //rgb eyes code end
+  delay(10);
 }
 void registerWrite(int whichPin, int whichState) {
 // the bits you want to send
@@ -88,5 +104,26 @@ void mouth(int timeout){
     delay(timeout);
     br--;    
   }
+}
+void RGB_color(int red, int green, int blue) {
+  int r=0,g=0,b=0;
+  while ( r != red || g != green || b != blue ) {
+    if ( r < red ) r += 1;
+    if ( r > red ) r -= 1;
+
+    if ( g < green ) g += 1;
+    if ( g > green ) g -= 1;
+
+    if ( b < blue ) b += 1;
+    if ( b > blue ) b -= 1;
+
+    _RGB_color(r,g,b);
+    delay(10);
+  }
+}
+void _RGB_color(int rVal, int gVal, int bVal){
+  analogWrite(rLed, rVal);
+  analogWrite(gLed, gVal);
+  analogWrite(bLed, bVal);
 }
 //unbreaking vscode git hopefully
