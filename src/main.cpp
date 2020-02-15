@@ -23,6 +23,70 @@ void setup() {
   pinMode(cl, OUTPUT);
   pinMode(data, OUTPUT);
 }
+void registerWrite(int whichPin, int whichState) {
+// the bits you want to send
+  byte bitsToSend = 0;
+
+  // turn off the output so the pins don't light up
+  // while you're shifting bits:
+  digitalWrite(latch, LOW);
+  // turn on the next highest bit in bitsToSend:
+  bitWrite(bitsToSend, whichPin, whichState);
+
+  // shift the bits out:
+  shiftOut(data, cl, MSBFIRST, bitsToSend);
+
+    // turn on the output so the LEDs can light up:
+  digitalWrite(latch, HIGH);
+
+}
+void mouth(int timeout){
+  int br=0;
+  while (br<8){
+    /* code */
+    registerWrite(br, HIGH);
+    delay(timeout);
+    if (br!=0){
+      /* code */
+      registerWrite(br-1,LOW);
+    }
+    delay(timeout);
+    br++;    
+  }
+  while (br>=0){
+    /* code */
+    registerWrite(br, HIGH);
+    delay(timeout);
+    if (br!=8){
+      /* code */
+      registerWrite(br+1,LOW);
+    }
+    delay(timeout);
+    br--;    
+  }
+}
+void _RGB_color(int rVal, int gVal, int bVal){
+  analogWrite(rLed, rVal);
+  analogWrite(gLed, gVal);
+  analogWrite(bLed, bVal);
+}
+void RGB_color(int red, int green, int blue) {
+  int r=0,g=0,b=0;
+  while ( r != red || g != green || b != blue ) {
+    if ( r < red ) r += 1;
+    if ( r > red ) r -= 1;
+
+    if ( g < green ) g += 1;
+    if ( g > green ) g -= 1;
+
+    if ( b < blue ) b += 1;
+    if ( b > blue ) b -= 1;
+
+    _RGB_color(r,g,b);
+    delay(10);
+  }
+}
+//unbreaking vscode git hopefully
 void loop() {
   //servo code start
   head.write(pos);
@@ -62,68 +126,3 @@ void loop() {
   //rgb eyes code end
   delay(10);
 }
-void registerWrite(int whichPin, int whichState) {
-// the bits you want to send
-  byte bitsToSend = 0;
-
-  // turn off the output so the pins don't light up
-  // while you're shifting bits:
-  digitalWrite(latch, LOW);
-
-  // turn on the next highest bit in bitsToSend:
-  bitWrite(bitsToSend, whichPin, whichState);
-
-  // shift the bits out:
-  shiftOut(data, cl, MSBFIRST, bitsToSend);
-
-    // turn on the output so the LEDs can light up:
-  digitalWrite(latch, HIGH);
-
-}
-void mouth(int timeout){
-  int br=0;
-  while (br<8){
-    /* code */
-    registerWrite(br, HIGH);
-    delay(timeout);
-    if (br!=0){
-      /* code */
-      registerWrite(br-1,LOW);
-    }
-    delay(timeout);
-    br++;    
-  }
-  while (br>=0){
-    /* code */
-    registerWrite(br, HIGH);
-    delay(timeout);
-    if (br!=8){
-      /* code */
-      registerWrite(br+1,LOW);
-    }
-    delay(timeout);
-    br--;    
-  }
-}
-void RGB_color(int red, int green, int blue) {
-  int r=0,g=0,b=0;
-  while ( r != red || g != green || b != blue ) {
-    if ( r < red ) r += 1;
-    if ( r > red ) r -= 1;
-
-    if ( g < green ) g += 1;
-    if ( g > green ) g -= 1;
-
-    if ( b < blue ) b += 1;
-    if ( b > blue ) b -= 1;
-
-    _RGB_color(r,g,b);
-    delay(10);
-  }
-}
-void _RGB_color(int rVal, int gVal, int bVal){
-  analogWrite(rLed, rVal);
-  analogWrite(gLed, gVal);
-  analogWrite(bLed, bVal);
-}
-//unbreaking vscode git hopefully
